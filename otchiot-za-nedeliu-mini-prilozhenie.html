@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Отчёт за неделю</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --coral: #E07856;
+    --coral-dark: #C85A3E;
+    --peach: #FBE3D3;
+    --ink: #2b2b2b;
+    --muted: #8a8a8a;
+    --line: #ececec;
+    --bg: #faf7f4;
+    --card: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.45;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 16px 16px 32px; }
+  h1 { font-size: 22px; margin: 4px 0 4px; }
+  .sub { color: var(--muted); font-size: 14px; margin: 0 0 16px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .card h2 { font-size: 15px; margin: 0 0 10px; color: var(--coral-dark); }
+  label { display: block; font-size: 14px; color: var(--muted); margin: 10px 0 4px; }
+  label:first-child { margin-top: 0; }
+  textarea {
+    width: 100%;
+    font-size: 17px;
+    padding: 11px 12px;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    min-height: 120px;
+    resize: vertical;
+  }
+  textarea:focus { border-color: var(--coral); }
+  .submit {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px; font-weight: 700;
+    color: #fff;
+    background: var(--coral);
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+  .submit:active { background: var(--coral-dark); }
+  .note { font-size: 13px; color: var(--muted); text-align: center; margin-top: 12px; }
+  #debug { display: none; white-space: pre-wrap; word-break: break-all; background: #f3f3f3; border-radius: 12px; padding: 12px; font-size: 13px; margin-top: 12px; }
+  .hint { font-size: 13px; color: var(--muted); margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Отчёт за неделю</h1>
+  <p class="sub">Цифры берутся из твоей таблицы автоматически. Здесь только комментарий о неделе.</p>
+
+  <div class="card">
+    <h2>Как прошла неделя</h2>
+    <label for="comment">Честный отзыв о неделе</label>
+    <textarea id="comment" placeholder="Как прошла неделя: голодно, нормально, сытно, что мешало"></textarea>
+    <p class="hint">Бот посчитает средние калории, шаги, тренировки, вес и замеры из твоего дневника и отправит сводку тренеру.</p>
+  </div>
+
+  <button class="submit" id="send" type="button">Отправить тренеру</button>
+  <p class="note">Сводка уйдёт твоему тренеру, цифры в таблицу вносить не нужно.</p>
+  <pre id="debug"></pre>
+</div>
+
+<script>
+  var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+  if (tg) { try { tg.ready(); tg.expand(); } catch (e) {} }
+
+  document.getElementById("send").addEventListener("click", function () {
+    var data = {
+      comment: document.getElementById("comment").value.trim()
+    };
+    var payload = JSON.stringify(data);
+    if (tg && tg.sendData) {
+      tg.sendData(payload);
+      try { tg.close(); } catch (e) {}
+    } else {
+      var dbg = document.getElementById("debug");
+      dbg.style.display = "block";
+      dbg.textContent = "Тест вне Telegram. Данные, которые ушли бы боту:\n" + payload;
+    }
+  });
+</script>
+</body>
+</html>

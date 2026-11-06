@@ -97,8 +97,22 @@
     };
     var payload = JSON.stringify(data);
     if (tg && tg.sendData) {
-      tg.sendData(payload);
-      try { tg.close(); } catch (e) {}
+      var btn = document.getElementById("send");
+      btn.disabled = true;
+      btn.textContent = "Отправляю...";
+      try {
+        tg.sendData(payload);
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = "Отправить тренеру";
+        var dbg2 = document.getElementById("debug");
+        dbg2.style.display = "block";
+        dbg2.textContent = "Не удалось отправить, попробуй ещё раз.";
+        return;
+      }
+      var note = document.querySelector(".note");
+      if (note) { note.textContent = "Отправлено, бот считает сводку..."; }
+      setTimeout(function () { try { tg.close(); } catch (e) {} }, 1200);
     } else {
       var dbg = document.getElementById("debug");
       dbg.style.display = "block";
